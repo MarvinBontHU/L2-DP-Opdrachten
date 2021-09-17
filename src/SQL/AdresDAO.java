@@ -1,3 +1,7 @@
+package SQL;
+
+import model.Adres;
+import model.Reiziger;
 import java.sql.SQLException;
 import java.util.List;
 

@@ -1,3 +1,7 @@
+package SQL;
+
+import model.Adres;
+import model.Reiziger;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +46,7 @@ public class AdresDAOPsql implements AdresDAO {
             return result;
 
         } catch (SQLException sqe) {
-            System.err.println("[SQLException] Adres niet gevonden. " + sqe.getMessage());
+            System.err.println("[SQLException] java.Adres niet gevonden. " + sqe.getMessage());
         } catch (NullPointerException npe) {
             System.err.println("[NullPointerException] Null data gegeven : " + npe.getMessage());
         } catch (Exception e) {
@@ -145,11 +149,11 @@ public class AdresDAOPsql implements AdresDAO {
             rs.close();
             st.close();
 
-            // Adres returnen
+            // java.Adres returnen
             return adres;
 
         } catch (SQLException sqlException) {
-            System.err.println("[SQLException] Adres via reiziger mislukt : " + sqlException.getMessage());
+            System.err.println("[SQLException] java.Adres via reiziger mislukt : " + sqlException.getMessage());
         } catch (NullPointerException npe) {
             System.err.println("[NullPointerException] " + npe.getMessage());
         }catch (Exception e) {

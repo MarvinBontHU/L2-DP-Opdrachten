@@ -1,3 +1,12 @@
+import SQL.AdresDAO;
+import SQL.AdresDAOPsql;
+import SQL.ReizigerDAO;
+import SQL.ReizigerDAOPsql;
+
+
+import model.Adres;
+import model.Reiziger;
+
 import java.sql.*;
 import java.util.List;
 
@@ -39,19 +48,19 @@ public class Main {
     }
 
     /**
-     * P2. Reiziger DAO: persistentie van een klasse
+     * P2. java.Reiziger DAO: persistentie van een klasse
      *
-     * Deze methode test de CRUD-functionaliteit van de Reiziger DAO
+     * Deze methode test de CRUD-functionaliteit van de java.Reiziger DAO
      *
      * @throws SQLException
      */
     private static void testReizigerDAO(ReizigerDAO rdao) throws SQLException {
-        System.out.println("\n---------- Test ReizigerDAO -------------");
+        System.out.println("\n---------- Test SQL.ReizigerDAO -------------");
 
 
         // Haal alle reizigers op uit de database
         List<Reiziger> reizigers = rdao.findAll();
-        System.out.println("[Test] ReizigerDAO.findAll() geeft de volgende reizigers:");
+        System.out.println("[Test] SQL.ReizigerDAO.findAll() geeft de volgende reizigers:");
         for (Reiziger r : reizigers) {
             System.out.println(r);
         }
@@ -60,7 +69,7 @@ public class Main {
         // Maak een nieuwe reiziger aan en persisteer deze in de database
         String gbdatum = "1981-03-14";
         Reiziger sietske = new Reiziger(77, "S", null, "Boers", java.sql.Date.valueOf(gbdatum));
-        System.out.print("[Test] Eerst " + reizigers.size() + " reizigers, na ReizigerDAO.save() ");
+        System.out.print("[Test] Eerst " + reizigers.size() + " reizigers, na SQL.ReizigerDAO.save() ");
         rdao.save(sietske);
         reizigers = rdao.findAll();
         System.out.println(reizigers.size() + " reizigers\n");
@@ -82,7 +91,7 @@ public class Main {
 
 
         // Delete de aangemaakte sietske
-        System.out.print("[TEST] Eerst " + reizigers.size() + " reizigers, na ReizigerDAO.delete() ");
+        System.out.print("[TEST] Eerst " + reizigers.size() + " reizigers, na SQL.ReizigerDAO.delete() ");
         rdao.delete(sietske);
         reizigers = rdao.findAll();
         System.out.println(reizigers.size() + " reizigers\n");
@@ -96,9 +105,9 @@ public class Main {
 
 
     /**
-     * P3. Adres DAO: persistentie van twee klassen met een één-op-één-relatie.
+     * P3. java.Adres DAO: persistentie van twee klassen met een één-op-één-relatie.
      *
-     * Deze methode test de CRUD-functionaliteit van de Adres DAO
+     * Deze methode test de CRUD-functionaliteit van de java.Adres DAO
      *
      * @throws SQLException
      */
@@ -112,7 +121,7 @@ public class Main {
         System.out.print("[Test] DELETE : Marvin's adres verwijderen indien hij er al een heeft. \n\n");
         adao.delete(marvin.getAdres());
 
-        System.out.print("[Test] CREATE : Eerst heeft reiziger M. Bont geen adres. Na AdresDAO.save() heeft deze een adres.\n\n");
+        System.out.print("[Test] CREATE : Eerst heeft reiziger M. Bont geen adres. Na SQL.AdresDAO.save() heeft deze een adres.\n\n");
 
         Adres mAdres = new Adres(10,"1445GA","14A","Dagmaatstraat","Purmerend", marvin);
 
@@ -124,25 +133,12 @@ public class Main {
         adao.update(mAdres);
         System.out.println(adao.findByReiziger(marvin));
 
-        System.out.println("[TEST] AdresDAO findAll() check. \n");
+        System.out.println("[TEST] SQL.AdresDAO findAll() check. \n");
         List<Adres> adressen = adao.findAll();
         for (Adres a : adressen) {
             System.out.println(a);
         }
 
-
-
-
-
-
-//
-//        List<Adres> adressen = adao.findAll();
-//
-//        System.out.println("[Test] AdresDAO.findAll() geeft de volgende adressen:");
-//        for (Adres a : adressen) {
-//            System.out.println(a);
-//        }
-//        System.out.println();
 
     }
 

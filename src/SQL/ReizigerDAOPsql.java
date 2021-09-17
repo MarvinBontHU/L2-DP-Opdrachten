@@ -1,3 +1,6 @@
+package SQL;
+
+import model.Reiziger;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -5,6 +8,7 @@ import java.util.List;
 public class ReizigerDAOPsql implements ReizigerDAO {
     private Connection conn;
     private AdresDAO adao;
+    private OVChipkaartDAO ovdao;
 
     public ReizigerDAOPsql(Connection conn) throws SQLException{
 
@@ -30,7 +34,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             // Prepared statement openen.
             PreparedStatement pst = conn.prepareStatement(query);
 
-            // Reiziger gegevens meegeven.
+            // java.Reiziger gegevens meegeven.
             pst.setInt(1, reiziger.getId());
             pst.setString(2, reiziger.getVoorletters());
             pst.setString(3, reiziger.getTussenvoegsel());
@@ -53,7 +57,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
 
 
         } catch (SQLException sqlException) {
-            System.err.println("[SQLException] Reiziger niet kunnen opslaan :" + sqlException.getMessage());
+            System.err.println("[SQLException] java.Reiziger niet kunnen opslaan :" + sqlException.getMessage());
         } catch (NullPointerException npe) {
             System.err.println("[NullPointerException] " + npe.getMessage());
         }catch (Exception e) {
@@ -71,7 +75,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             // Prepared statement openen.
             PreparedStatement pst = conn.prepareStatement(query);
 
-            // Reiziger gegevens meegeven.
+            // java.Reiziger gegevens meegeven.
             pst.setString(1, reiziger.getAchternaam());
             pst.setInt(2, reiziger.getId());
 
@@ -91,7 +95,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
 
 
         } catch (SQLException sqlException) {
-            System.err.println("[SQLException] Reiziger met id: " + reiziger.getId() + " niet gevonden." + sqlException.getMessage());
+            System.err.println("[SQLException] java.Reiziger met id: " + reiziger.getId() + " niet gevonden." + sqlException.getMessage());
         } catch (NullPointerException npe) {
             System.err.println("[NullPointerException] " + npe.getMessage());
         }catch (Exception e) {
@@ -113,7 +117,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             // Prepared statement openen.
             PreparedStatement pst = conn.prepareStatement(query);
 
-            // Reiziger gegevens meegeven.
+            // java.Reiziger gegevens meegeven.
             pst.setInt(1, reiziger.getId());
 
             // Statement uitvoeren en boolean in een aparte result toevoegen.
@@ -127,7 +131,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             return result;
 
         } catch (SQLException sqlException) {
-            System.err.println("[SQLException] Reiziger delete failed : " + sqlException.getMessage());
+            System.err.println("[SQLException] java.Reiziger delete failed : " + sqlException.getMessage());
         } catch (NullPointerException npe) {
             System.err.println("[NullPointerException] " + npe.getMessage());
         }catch (Exception e) {
@@ -173,10 +177,10 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             rs.close();
             st.close();
 
-            // Reiziger returnen.
+            // java.Reiziger returnen.
             return reiziger;
         } catch (SQLException sqlException) {
-            System.err.println("[SQLException] Reiziger met id: " + id + " niet gevonden." + sqlException.getMessage());
+            System.err.println("[SQLException] java.Reiziger met id: " + id + " niet gevonden." + sqlException.getMessage());
         } catch (NullPointerException npe) {
             System.err.println("[NullPointerException] " + npe.getMessage());
         }catch (Exception e) {

@@ -1,3 +1,5 @@
+package model;
+
 import java.sql.Date;
 
 public class Reiziger {
@@ -5,6 +7,7 @@ public class Reiziger {
     private String voorletters, tussenvoegsel, achternaam;
     private java.sql.Date geboortedatum;
     private Adres adres;
+    private OVChipkaart ovchipkaart;
 
     public Reiziger(int id, String vl, String tv, String an, java.sql.Date gb) {
         this.id = id;
@@ -21,6 +24,15 @@ public class Reiziger {
         this.achternaam = an;
         this.geboortedatum = gb;
         this.adres = ad;
+    }
+
+    public Reiziger(int id, String vl, String tv, String an, java.sql.Date gb, OVChipkaart ov) {
+        this.id = id;
+        this.voorletters =  vl;
+        this.tussenvoegsel = tv;
+        this.achternaam = an;
+        this.geboortedatum = gb;
+        this.ovchipkaart = ov;
     }
 
     public int getId() { return id; }
@@ -45,9 +57,9 @@ public class Reiziger {
     @Override
     public String toString() {
         if (this.getAdres() != null) {
-            return "Reiziger {#"+id+": "+ getNaam() + ", geb. "+geboortedatum+", Adres"+ adres.toString() +" }";
+            return "java.Reiziger {#"+id+": "+ getNaam() + ", geb. "+geboortedatum+", java.Adres"+ adres.toString() +" }";
         }
 
-        return "Reiziger {#"+id+": "+ getNaam() + ", geb. "+geboortedatum+"}";
+        return "java.Reiziger {#"+id+": "+ getNaam() + ", geb. "+geboortedatum+"}";
     }
 }

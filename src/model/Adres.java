@@ -1,3 +1,5 @@
+package model;
+
 public class Adres {
     private int id;
     private String postcode, huisnummer, straat, woonplaats;

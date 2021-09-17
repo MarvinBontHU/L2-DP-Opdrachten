@@ -1,3 +1,6 @@
+package SQL;
+
+import model.Reiziger;
 import java.sql.SQLException;
 import java.util.List;
 
