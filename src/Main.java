@@ -6,8 +6,13 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         connection = getConnection();
-        ReizigerDAO postgresReizigerDao = new ReizigerDAOPsql(connection);
+        AdresDAO postgresAdresDao = new AdresDAOPsql(connection);
+        ReizigerDAO postgresReizigerDao = new ReizigerDAOPsql(connection, postgresAdresDao);
         testReizigerDAO(postgresReizigerDao);
+
+        AdresDAO postgresAdresDao2 = new AdresDAOPsql(connection, postgresReizigerDao);
+        testAdresDAO(postgresAdresDao2);
+
         connection.close();
     }
 
@@ -54,7 +59,7 @@ public class Main {
 
         // Maak een nieuwe reiziger aan en persisteer deze in de database
         String gbdatum = "1981-03-14";
-        Reiziger sietske = new Reiziger(77, "S", "", "Boers", java.sql.Date.valueOf(gbdatum));
+        Reiziger sietske = new Reiziger(77, "S", null, "Boers", java.sql.Date.valueOf(gbdatum));
         System.out.print("[Test] Eerst " + reizigers.size() + " reizigers, na ReizigerDAO.save() ");
         rdao.save(sietske);
         reizigers = rdao.findAll();
@@ -68,6 +73,7 @@ public class Main {
         rdao.update(sietske);
 
         reizigers = rdao.findAll();
+
         for (Reiziger r : reizigers) {
             if (r.getId() == 77) {
                 System.out.println(r+"\n");
@@ -81,6 +87,63 @@ public class Main {
         reizigers = rdao.findAll();
         System.out.println(reizigers.size() + " reizigers\n");
         rdao.delete(sietske);
+
+        // Nieuwe reiziger aanmaken voor adres test later.
+        String marvin_gbdatum = "1995-09-11";
+        Reiziger marvin = new Reiziger(100, "M", null, "Bont", java.sql.Date.valueOf(marvin_gbdatum));
+        rdao.save(marvin);
+    }
+
+
+    /**
+     * P3. Adres DAO: persistentie van twee klassen met een één-op-één-relatie.
+     *
+     * Deze methode test de CRUD-functionaliteit van de Adres DAO
+     *
+     * @throws SQLException
+     */
+    public static void testAdresDAO(AdresDAO adao) throws SQLException {
+        System.out.println("\n---------- Test AdresDao -------------");
+
+        // Maak een nieuwe reiziger aan voor later gebruik.
+        String marvin_gbdatum = "1995-09-11";
+        Reiziger marvin = new Reiziger(100, "M", null, "Bont", java.sql.Date.valueOf(marvin_gbdatum));
+
+        System.out.print("[Test] DELETE : Marvin's adres verwijderen indien hij er al een heeft. \n\n");
+        adao.delete(marvin.getAdres());
+
+        System.out.print("[Test] CREATE : Eerst heeft reiziger M. Bont geen adres. Na AdresDAO.save() heeft deze een adres.\n\n");
+
+        Adres mAdres = new Adres(10,"1445GA","14A","Dagmaatstraat","Purmerend", marvin);
+
+        adao.save(mAdres);
+        System.out.println(adao.findByReiziger(marvin));
+
+        System.out.print("[Test] UPDATE : Marvin's huisnummer veranderend naar '20b'. \n\n");
+        mAdres.setHuisnummer("20b");
+        adao.update(mAdres);
+        System.out.println(adao.findByReiziger(marvin));
+
+        System.out.println("[TEST] AdresDAO findAll() check. \n");
+        List<Adres> adressen = adao.findAll();
+        for (Adres a : adressen) {
+            System.out.println(a);
+        }
+
+
+
+
+
+
+//
+//        List<Adres> adressen = adao.findAll();
+//
+//        System.out.println("[Test] AdresDAO.findAll() geeft de volgende adressen:");
+//        for (Adres a : adressen) {
+//            System.out.println(a);
+//        }
+//        System.out.println();
+
     }
 
 }
