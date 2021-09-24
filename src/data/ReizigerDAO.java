@@ -1,4 +1,4 @@
-package SQL;
+package data;
 
 import model.Reiziger;
 import java.sql.SQLException;

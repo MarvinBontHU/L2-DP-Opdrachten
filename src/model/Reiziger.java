@@ -1,13 +1,14 @@
 package model;
 
 import java.sql.Date;
+import java.util.List;
 
 public class Reiziger {
     private int id;
     private String voorletters, tussenvoegsel, achternaam;
     private java.sql.Date geboortedatum;
     private Adres adres;
-    private OVChipkaart ovchipkaart;
+    private List<OVChipkaart> ovchipkaarten;
 
     public Reiziger(int id, String vl, String tv, String an, java.sql.Date gb) {
         this.id = id;
@@ -26,14 +27,16 @@ public class Reiziger {
         this.adres = ad;
     }
 
-    public Reiziger(int id, String vl, String tv, String an, java.sql.Date gb, OVChipkaart ov) {
+    public Reiziger(int id, String vl, String tv, String an, java.sql.Date gb, Adres ad, List<OVChipkaart> ov) {
         this.id = id;
         this.voorletters =  vl;
         this.tussenvoegsel = tv;
         this.achternaam = an;
         this.geboortedatum = gb;
-        this.ovchipkaart = ov;
+        this.adres = ad;
+        this.ovchipkaarten = ov;
     }
+
 
     public int getId() { return id; }
     public String getVoorletters() { return voorletters; }
@@ -46,6 +49,10 @@ public class Reiziger {
 
     public Adres getAdres() { return adres; }
 
+    public List<OVChipkaart> getOvchipkaarten() {
+        return ovchipkaarten;
+    }
+
     public void setId(int id) { this.id = id; }
     public void setVoorletters(String voorletters) { this.voorletters = voorletters; }
     public void setTussenvoegsel(String tussenvoegsel) { this.tussenvoegsel = tussenvoegsel; }
@@ -54,12 +61,20 @@ public class Reiziger {
 
     public void setAdres(Adres adres) { this.adres = adres; }
 
+    public void setOvchipkaarten(List<OVChipkaart> ovchipkaarten) {
+        this.ovchipkaarten = ovchipkaarten;
+    }
+
     @Override
     public String toString() {
+        String reiziger = "Reiziger {#"+id+": "+ getNaam() + ", geb. "+geboortedatum+"}";
         if (this.getAdres() != null) {
-            return "java.Reiziger {#"+id+": "+ getNaam() + ", geb. "+geboortedatum+", java.Adres"+ adres.toString() +" }";
+            reiziger = reiziger + ", " + adres +" }";
+        }
+        if (this.ovchipkaarten != null) {
+            reiziger = reiziger + ", " + ovchipkaarten + " }";
         }
 
-        return "java.Reiziger {#"+id+": "+ getNaam() + ", geb. "+geboortedatum+"}";
+        return reiziger;
     }
 }

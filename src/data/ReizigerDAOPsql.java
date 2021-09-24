@@ -1,5 +1,7 @@
-package SQL;
+package data;
 
+import model.Adres;
+import model.OVChipkaart;
 import model.Reiziger;
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,15 +13,9 @@ public class ReizigerDAOPsql implements ReizigerDAO {
     private OVChipkaartDAO ovdao;
 
     public ReizigerDAOPsql(Connection conn) throws SQLException{
-
         this.conn = conn;
-
-    }
-
-    public ReizigerDAOPsql(Connection conn, AdresDAO adao) throws SQLException{
-
-        this.conn = conn;
-        this.adao = adao;
+        adao = new AdresDAOPsql(conn);
+        ovdao = new OVChipkaartDAOPsql(conn);
     }
 
     @Override
@@ -34,7 +30,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             // Prepared statement openen.
             PreparedStatement pst = conn.prepareStatement(query);
 
-            // java.Reiziger gegevens meegeven.
+            // Reiziger gegevens meegeven.
             pst.setInt(1, reiziger.getId());
             pst.setString(2, reiziger.getVoorletters());
             pst.setString(3, reiziger.getTussenvoegsel());
@@ -52,12 +48,19 @@ public class ReizigerDAOPsql implements ReizigerDAO {
                 adao.save(reiziger.getAdres());
             }
 
+            // Als ovchipkaart niet null is wordt deze ook opgeslagen via ovdao.
+            if (reiziger.getOvchipkaarten() != null) {
+                for (OVChipkaart ovchipkaart : reiziger.getOvchipkaarten()) {
+                    ovdao.save(ovchipkaart);
+                }
+            }
+
             // Result returnen.
             return result;
 
 
         } catch (SQLException sqlException) {
-            System.err.println("[SQLException] java.Reiziger niet kunnen opslaan :" + sqlException.getMessage());
+            System.err.println("[SQLException] Reiziger niet kunnen opslaan :" + sqlException.getMessage());
         } catch (NullPointerException npe) {
             System.err.println("[NullPointerException] " + npe.getMessage());
         }catch (Exception e) {
@@ -75,7 +78,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             // Prepared statement openen.
             PreparedStatement pst = conn.prepareStatement(query);
 
-            // java.Reiziger gegevens meegeven.
+            // Reiziger gegevens meegeven.
             pst.setString(1, reiziger.getAchternaam());
             pst.setInt(2, reiziger.getId());
 
@@ -95,7 +98,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
 
 
         } catch (SQLException sqlException) {
-            System.err.println("[SQLException] java.Reiziger met id: " + reiziger.getId() + " niet gevonden." + sqlException.getMessage());
+            System.err.println("[SQLException] Reiziger met id: " + reiziger.getId() + " niet gevonden." + sqlException.getMessage());
         } catch (NullPointerException npe) {
             System.err.println("[NullPointerException] " + npe.getMessage());
         }catch (Exception e) {
@@ -108,8 +111,15 @@ public class ReizigerDAOPsql implements ReizigerDAO {
     public boolean delete(Reiziger reiziger) {
         try {
             // Als reiziger een adres heeft wordt deze eerst verwijderd om constraint issues te voorkomen.
-            if (reiziger.getAdres() !=null) {
+            if (reiziger.getAdres() != null) {
                 adao.delete(reiziger.getAdres());
+            }
+
+            // Als reiziger een of meerdere ovchipkaarten heeft worden deze eerst verwijderd om constraint issues te voorkomen.
+            if (reiziger.getOvchipkaarten() != null) {
+                for (OVChipkaart ovchipkaart : reiziger.getOvchipkaarten()) {
+                    ovdao.delete(ovchipkaart);
+                }
             }
             // Query waarbij een Prepared Statement gebruikt wordt om de gegevens van de reiziger mee te geven.
             String query = "DELETE FROM reiziger WHERE reiziger_id = ?";
@@ -117,7 +127,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             // Prepared statement openen.
             PreparedStatement pst = conn.prepareStatement(query);
 
-            // java.Reiziger gegevens meegeven.
+            // Reiziger gegevens meegeven.
             pst.setInt(1, reiziger.getId());
 
             // Statement uitvoeren en boolean in een aparte result toevoegen.
@@ -131,7 +141,7 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             return result;
 
         } catch (SQLException sqlException) {
-            System.err.println("[SQLException] java.Reiziger delete failed : " + sqlException.getMessage());
+            System.err.println("[SQLException] Reiziger delete failed : " + sqlException.getMessage());
         } catch (NullPointerException npe) {
             System.err.println("[NullPointerException] " + npe.getMessage());
         }catch (Exception e) {
@@ -157,19 +167,21 @@ public class ReizigerDAOPsql implements ReizigerDAO {
 
             // While loop waar rekening wordt gehouden met eventuele null tussenvoegsel.
             while (rs.next()) {
+                int r_id = rs.getInt("reiziger_id");
+                String r_vl = rs.getString("voorletters");
+                String r_tv = "";
                 if (rs.getString("tussenvoegsel") != null) {
-                    reiziger = new Reiziger(rs.getInt("reiziger_id"),
-                            rs.getString("voorletters"),
-                            rs.getString("tussenvoegsel"),
-                            rs.getString("achternaam"),
-                            rs.getDate("geboortedatum"));
-                } else {
-                    reiziger = new Reiziger(rs.getInt("reiziger_id"),
-                            rs.getString("voorletters"),
-                            null,
-                            rs.getString("achternaam"),
-                            rs.getDate("geboortedatum"));
+                    r_tv = rs.getString("tussenvoegsel");
                 }
+                String r_an = rs.getString("achternaam");
+                Date r_gd = rs.getDate("geboortedatum");
+
+                reiziger = new Reiziger(r_id, r_vl, r_tv, r_an, r_gd);
+
+                Adres adres = adao.findByReiziger(reiziger);
+                List<OVChipkaart> ovChipkaarten = ovdao.findByReiziger(reiziger);
+                reiziger.setAdres(adres);
+                reiziger.setOvchipkaarten(ovChipkaarten);
             }
 
 
@@ -177,10 +189,10 @@ public class ReizigerDAOPsql implements ReizigerDAO {
             rs.close();
             st.close();
 
-            // java.Reiziger returnen.
+            // Reiziger returnen.
             return reiziger;
         } catch (SQLException sqlException) {
-            System.err.println("[SQLException] java.Reiziger met id: " + id + " niet gevonden." + sqlException.getMessage());
+            System.err.println("[SQLException] Reiziger met id: " + id + " niet gevonden." + sqlException.getMessage());
         } catch (NullPointerException npe) {
             System.err.println("[NullPointerException] " + npe.getMessage());
         }catch (Exception e) {
@@ -218,6 +230,10 @@ public class ReizigerDAOPsql implements ReizigerDAO {
 
                 reiziger = new Reiziger(r_id, r_vl, r_tv, r_an, r_gd);
 
+                Adres adres = adao.findByReiziger(reiziger);
+                List<OVChipkaart> ovChipkaarten = ovdao.findByReiziger(reiziger);
+                reiziger.setAdres(adres);
+                reiziger.setOvchipkaarten(ovChipkaarten);
                 reizigers.add(reiziger);
             }
 
@@ -264,7 +280,12 @@ public class ReizigerDAOPsql implements ReizigerDAO {
                 String r_an = rs.getString("achternaam");
                 Date r_gd = rs.getDate("geboortedatum");
 
+
                 reiziger = new Reiziger(r_id, r_vl, r_tv, r_an, r_gd);
+                Adres adres = adao.findByReiziger(reiziger);
+                List<OVChipkaart> ovChipkaarten = ovdao.findByReiziger(reiziger);
+                reiziger.setAdres(adres);
+                reiziger.setOvchipkaarten(ovChipkaarten);
                 reizigers.add(reiziger);
             }
 

@@ -1,10 +1,8 @@
-import SQL.AdresDAO;
-import SQL.AdresDAOPsql;
-import SQL.ReizigerDAO;
-import SQL.ReizigerDAOPsql;
+import data.*;
 
 
 import model.Adres;
+import model.OVChipkaart;
 import model.Reiziger;
 
 import java.sql.*;
@@ -15,13 +13,13 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         connection = getConnection();
+        ReizigerDAO postgresReizigerDao = new ReizigerDAOPsql(connection);
         AdresDAO postgresAdresDao = new AdresDAOPsql(connection);
-        ReizigerDAO postgresReizigerDao = new ReizigerDAOPsql(connection, postgresAdresDao);
+        OVChipkaartDAO postgresOvchipkaartDao = new OVChipkaartDAOPsql(connection);
+
         testReizigerDAO(postgresReizigerDao);
-
-        AdresDAO postgresAdresDao2 = new AdresDAOPsql(connection, postgresReizigerDao);
-        testAdresDAO(postgresAdresDao2);
-
+        testAdresDAO(postgresAdresDao, postgresReizigerDao);
+        testOvchipkaartDAO(postgresOvchipkaartDao, postgresReizigerDao);
         connection.close();
     }
 
@@ -98,9 +96,7 @@ public class Main {
         rdao.delete(sietske);
 
         // Nieuwe reiziger aanmaken voor adres test later.
-        String marvin_gbdatum = "1995-09-11";
-        Reiziger marvin = new Reiziger(100, "M", null, "Bont", java.sql.Date.valueOf(marvin_gbdatum));
-        rdao.save(marvin);
+
     }
 
 
@@ -111,22 +107,28 @@ public class Main {
      *
      * @throws SQLException
      */
-    public static void testAdresDAO(AdresDAO adao) throws SQLException {
+    public static void testAdresDAO(AdresDAO adao, ReizigerDAO rdao) throws SQLException {
         System.out.println("\n---------- Test AdresDao -------------");
+
 
         // Maak een nieuwe reiziger aan voor later gebruik.
         String marvin_gbdatum = "1995-09-11";
         Reiziger marvin = new Reiziger(100, "M", null, "Bont", java.sql.Date.valueOf(marvin_gbdatum));
-
-        System.out.print("[Test] DELETE : Marvin's adres verwijderen indien hij er al een heeft. \n\n");
-        adao.delete(marvin.getAdres());
-
-        System.out.print("[Test] CREATE : Eerst heeft reiziger M. Bont geen adres. Na SQL.AdresDAO.save() heeft deze een adres.\n\n");
-
         Adres mAdres = new Adres(10,"1445GA","14A","Dagmaatstraat","Purmerend", marvin);
 
+        // Verwijderen van reiziger en adres
+        System.out.print("[Test] DELETE : Marvin en zijn adres verwijderen indien deze bestaan. \n\n");
+        adao.delete(mAdres);
+        rdao.delete(marvin);
+
+        // Reiziger opslaan.
+        rdao.save(marvin);
+        System.out.print("[Test] CREATE : Eerst heeft reiziger M. Bont geen adres. Na SQL.AdresDAO.save() heeft deze een adres.\n\n");
+        System.out.println("Zonder adres : " + adao.findByReiziger(marvin));
         adao.save(mAdres);
-        System.out.println(adao.findByReiziger(marvin));
+        mAdres.setReiziger(marvin);
+        marvin.setAdres(mAdres);
+        System.out.println("Met adres : " + adao.findByReiziger(marvin));
 
         System.out.print("[Test] UPDATE : Marvin's huisnummer veranderend naar '20b'. \n\n");
         mAdres.setHuisnummer("20b");
@@ -138,7 +140,45 @@ public class Main {
         for (Adres a : adressen) {
             System.out.println(a);
         }
+    }
 
+    /**
+     * P4. Ovchipkaart DAO: Persistentie van twee klassen met een één-op-veel-relatie.
+     *
+     * Deze methode test de CRUD-functionaliteit van de ovchipkaart DAO
+     *
+     * @throws SQLException
+     */
+    public static void testOvchipkaartDAO(OVChipkaartDAO ovdao, ReizigerDAO rdao) throws SQLException {
+        System.out.println("\n---------- Test OvchipkaartDao -------------");
+
+        // Nieuwe reiziger en OV aanmaken.
+        String jan_gbdatum = "1990-10-06";
+        String ov_datum = "2020-01-01";
+        Reiziger jan = new Reiziger(115, "J", "de", "Wit", java.sql.Date.valueOf(jan_gbdatum));
+        OVChipkaart ov1 = new OVChipkaart(64824, java.sql.Date.valueOf(ov_datum), 1, 250.00, jan);
+        OVChipkaart ov2 = new OVChipkaart(97682, java.sql.Date.valueOf(ov_datum), 2, 20.00, jan);
+
+        // Reiziger en ov verwijderen indien deze al aangemaakt zijn.
+        System.out.println("[TEST] Verwijderen van bestaande OV chipkaarten van Jan.");
+        System.out.println("Huidige kaarten van Jan : ");
+        System.out.println(ovdao.findByReiziger(jan) + "\n");
+        ovdao.delete(ov1);
+        ovdao.delete(ov2);
+
+        System.out.println("Kaarten van Jan na delete: ");
+        System.out.println(ovdao.findByReiziger(jan) + "\n");
+        rdao.delete(jan);
+
+        System.out.println("[TEST] Find Reiziger Check. Kaarten van Jan na saven : ");
+        rdao.save(jan);
+        ovdao.save(ov1);
+        ovdao.save(ov2);
+        System.out.println(ovdao.findByReiziger(jan));
+
+        System.out.print("\n[TEST] UPDATE Check. OV1 klasse voor update = " + ov1.getKlasse());
+        ov1.setKlasse(2);
+        System.out.println(". Na update heeft OV1 klasse = " + ov1.getKlasse() + "\n");
 
     }
 

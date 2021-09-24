@@ -1,4 +1,4 @@
-package SQL;
+package data;
 
 import model.Adres;
 import model.Reiziger;

@@ -37,8 +37,10 @@ public class Adres {
     public void setStraat(String straat) { this.straat = straat; }
     public void setWoonplaats(String woonplaats) { this.woonplaats = woonplaats; }
 
+    public void setReiziger(Reiziger reiziger) { this.reiziger = reiziger; }
+
     @Override
     public String toString() {
-        return "{#" + id + " " + postcode + "-" + huisnummer + "}";
+        return "Adres {#" + id + " " + postcode + "-" + huisnummer + "}";
     }
 }

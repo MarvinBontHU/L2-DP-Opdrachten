@@ -1,7 +1,8 @@
-package SQL;
+package data;
 
 import model.Adres;
 import model.Reiziger;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,13 +15,9 @@ public class AdresDAOPsql implements AdresDAO {
         this.conn = connection;
     }
 
-    public AdresDAOPsql(Connection connection, ReizigerDAO rdao){
-        this.conn = connection;
-        this.rdao = rdao;
-    }
 
     @Override
-    public boolean save(Adres adres) {
+    public boolean save(Adres adres) throws SQLException{
         try {
             //Query om adres op de slaan
             String query = "INSERT INTO adres (adres_id, postcode, huisnummer, straat, woonplaats, reiziger_id)" +
@@ -142,7 +139,7 @@ public class AdresDAOPsql implements AdresDAO {
                 String a_str = rs.getString("straat");
                 String a_wp = rs.getString("woonplaats");
 
-                adres = new Adres(a_id, a_pc, a_hn, a_str, a_wp);
+                adres = new Adres(a_id, a_pc, a_hn, a_str, a_wp, reiziger);
             }
 
             // ResultSet en Statement sluiten.
