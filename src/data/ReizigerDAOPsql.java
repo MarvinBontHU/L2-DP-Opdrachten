@@ -93,6 +93,14 @@ public class ReizigerDAOPsql implements ReizigerDAO {
                 adao.save(reiziger.getAdres());
             }
 
+            // Als OV-Chipkaart niet null is wordt deze ook opgeslagen via ovdao.
+            if (reiziger.getOvchipkaarten() != null) {
+                List<OVChipkaart> ovchipkaarten = reiziger.getOvchipkaarten();
+                for (OVChipkaart ovChipkaart : ovchipkaarten) {
+                    ovdao.save(ovChipkaart);
+                }
+            }
+
             // Result returnen.
             return result;
 

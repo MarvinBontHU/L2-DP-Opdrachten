@@ -133,7 +133,8 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
                 int ov_kl = rs.getInt("klasse");
                 double ov_sd = rs.getDouble("saldo");
 
-                OVChipkaart ovchipkaart = new OVChipkaart(ov_id, ov_gt, ov_kl, ov_sd);
+
+                OVChipkaart ovchipkaart = new OVChipkaart(ov_id, ov_gt, ov_kl, ov_sd, reiziger);
                 ovchipkaarten.add(ovchipkaart);
             }
 
