@@ -1,6 +1,7 @@
 package data;
 
 import model.OVChipkaart;
+import model.Product;
 import model.Reiziger;
 
 import java.sql.*;
@@ -10,20 +11,23 @@ import java.util.List;
 public class OVChipkaartDAOPsql implements OVChipkaartDAO{
     private Connection conn;
     private ReizigerDAO rdao;
+    private ProductDAO pdao;
 
     public OVChipkaartDAOPsql(Connection connection){
         this.conn = connection;
+        pdao = new ProductDAOPsql(conn);
     }
 
     @Override
     public boolean save(OVChipkaart ovChipkaart) throws SQLException {
         try{
+
             //Query om ovchipkaart op de slaan
 
             String query = "INSERT INTO ov_chipkaart (kaart_nummer, geldig_tot, klasse, saldo, reiziger_id)" +
                     "VALUES (?, ?, ?, ?, ?)";
 
-            // Prepared statement waarbij we de attributen van adres meegeven.
+            // Prepared statement waarbij we de attributen van ovkaart meegeven.
             PreparedStatement pst = conn.prepareStatement(query);
             pst.setInt(1, ovChipkaart.getKaart_nummer());
             pst.setDate(2, ovChipkaart.getGeldig_tot());
@@ -31,11 +35,20 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
             pst.setDouble(4, ovChipkaart.getSaldo());
             pst.setInt(5, ovChipkaart.getReiziger().getId());
 
+
             // Result van de execute in een boolean opslaan.
             boolean result = pst.execute();
 
             // Prepared statement sluiten.
             pst.close();
+
+            // Als product niet null is wordt deze ook opgeslagen via pdao.
+            if (ovChipkaart.getProducten() != null) {
+                List<Product> producten = ovChipkaart.getProducten();
+                for (Product product : producten){
+                    pdao.save(product);
+                }
+            }
 
             // Result teruggeven.
             return result;
@@ -56,7 +69,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
 
             String query = "UPDATE ov_chipkaart SET saldo = ? WHERE kaart_nummer = ?";
 
-            // Prepared statement waarbij we de relevante attributen van adres meegeven.
+            // Prepared statement waarbij we de relevante attributen van de ovchipkaart meegeven.
             PreparedStatement pst = conn.prepareStatement(query);
             pst.setDouble(1, ovChipkaart.getSaldo());
             pst.setInt(2, ovChipkaart.getKaart_nummer());
@@ -66,6 +79,14 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
 
             // Prepared statement sluiten.
             pst.close();
+
+            // Als product niet null is wordt deze ook opgeslagen via pdao.
+            if (ovChipkaart.getProducten() != null) {
+                List<Product> producten = ovChipkaart.getProducten();
+                for (Product product : producten){
+                    pdao.save(product);
+                }
+            }
 
             // Result teruggeven.
             return result;
@@ -84,11 +105,18 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
     @Override
     public boolean delete(OVChipkaart ovChipkaart) throws SQLException {
         try {
+            // Als product niet null is wordt deze als eerst verwijderd.
+            if (ovChipkaart.getProducten() != null) {
+                List<Product> producten = ovChipkaart.getProducten();
+                for (Product product : producten){
+                    pdao.delete(product);
+                }
+            }
             //Query om een ovchipkaart te deleten, gegeven deze niet null is.
             if (ovChipkaart != null) {
                 String query = "DELETE FROM ov_chipkaart WHERE kaart_nummer = ?";
 
-                // Prepared statement waarbij de het id van adres meegeven.
+                // Prepared statement waarbij we de kaartnummer van ovchipkaart meegeven.
                 PreparedStatement pst = conn.prepareStatement(query);
                 pst.setInt(1, ovChipkaart.getKaart_nummer());
 
@@ -124,7 +152,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
             // ResultSet openen.
             ResultSet rs = st.executeQuery(query);
 
-            // Leeg adres aanmaken om data in op te slaan.
+            // Lege lijst van ovchipkaarten aanmaken om data in op te slaan.
             List<OVChipkaart> ovchipkaarten = new ArrayList<OVChipkaart>();
 
             while (rs.next()) {

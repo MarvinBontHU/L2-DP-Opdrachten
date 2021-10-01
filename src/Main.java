@@ -3,6 +3,7 @@ import data.*;
 
 import model.Adres;
 import model.OVChipkaart;
+import model.Product;
 import model.Reiziger;
 
 import java.sql.*;
@@ -16,10 +17,12 @@ public class Main {
         ReizigerDAO postgresReizigerDao = new ReizigerDAOPsql(connection);
         AdresDAO postgresAdresDao = new AdresDAOPsql(connection);
         OVChipkaartDAO postgresOvchipkaartDao = new OVChipkaartDAOPsql(connection);
+        ProductDAO postgresProductDao = new ProductDAOPsql(connection);
 
         testReizigerDAO(postgresReizigerDao);
         testAdresDAO(postgresAdresDao, postgresReizigerDao);
         testOvchipkaartDAO(postgresOvchipkaartDao, postgresReizigerDao);
+        testProductDAO(postgresProductDao);
         connection.close();
     }
 
@@ -176,10 +179,39 @@ public class Main {
         ovdao.save(ov2);
         System.out.println(ovdao.findByReiziger(jan));
 
-        System.out.print("\n[TEST] UPDATE Check. OV1 klasse voor update = " + ov1.getKlasse());
-        ov1.setKlasse(2);
-        System.out.println(". Na update heeft OV1 klasse = " + ov1.getKlasse() + "\n");
+        System.out.print("\n[TEST] UPDATE Check. OV1 Saldo voor update = " + ov1.getSaldo());
+        ov1.setSaldo(500.00);
+        ovdao.update(ov1);
+        System.out.println(". Na update heeft OV1 Saldo = " + ov1.getSaldo() + "\n");
 
     }
+
+    private static void testProductDAO(ProductDAO pdao) throws SQLException {
+        System.out.println("\n---------- Test OvchipkaartDao -------------");
+
+        // Een nieuw testproduct aanmaken
+        Product product1 = new Product(7, "Test product", "Een testproduct om te kijken of dit werkt", 15.50);
+
+
+        System.out.println("[TEST] Verwijderen van bestaand product.");
+        System.out.println("Huidige Producten :");
+        System.out.println(pdao.findAll() + "\n");
+        pdao.delete(product1);
+        System.out.println("Producten na deleten:");
+        System.out.println(pdao.findAll() + "\n");
+
+
+        System.out.println("[TEST] Opslaan van een nieuw testproduct");
+        pdao.save(product1);
+        System.out.println(pdao.findAll() + "\n");
+
+        System.out.println("[TEST] Aanpassen van de prijs van een bestaand product. Prijs van testproduct veranderd naar 20 euro");
+        product1.setPrijs(20);
+        pdao.update(product1);
+        System.out.println(pdao.findAll());
+
+
+    }
+
 
 }

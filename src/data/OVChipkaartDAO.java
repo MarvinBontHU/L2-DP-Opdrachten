@@ -1,6 +1,5 @@
 package data;
 
-import model.Adres;
 import model.OVChipkaart;
 import model.Reiziger;
 
