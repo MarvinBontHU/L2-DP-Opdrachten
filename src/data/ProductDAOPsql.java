@@ -68,6 +68,8 @@ public class ProductDAOPsql implements ProductDAO{
             // Prepared statement sluiten.
             pst.close();
 
+
+
             // Result teruggeven.
             return result;
 
@@ -120,8 +122,12 @@ public class ProductDAOPsql implements ProductDAO{
             Statement st = conn.createStatement();
 
             // Query om alle info van reiziger met specifiek id op te vragen.
-            String query = "SELECT p.product_nummer = ?, p.naam = ?, p.beschrijving = ?, p.prijs = ? FROM product p CROSS JOIN ov_chipkaart " +
-                    "WHERE p.kaart_nummer =" + ovChipkaart.getKaart_nummer();
+            String query = "SELECT p.product_nummer, p.naam, p.beschrijving, p.prijs FROM product p " +
+            "JOIN ov_chipkaart_product ocp " +
+            "ON p.product_nummer = ocp.product_nummer " +
+            "JOIN ov_chipkaart ov " +
+            "ON ocp.kaart_nummer = ov.kaart_nummer " +
+            "WHERE ov.kaart_nummer = " + ovChipkaart.getKaart_nummer();
 
             // ResultSet openen.
             ResultSet rs = st.executeQuery(query);
@@ -168,7 +174,7 @@ public class ProductDAOPsql implements ProductDAO{
             ResultSet rs = st.executeQuery(query);
 
             // Leeg product en lijst aanmaken om later data in te stoppen.
-            Product product = null;
+            Product product;
             List<Product> producten = new ArrayList<>();
 
             // While loop om data op te vragen.
@@ -190,7 +196,7 @@ public class ProductDAOPsql implements ProductDAO{
             // Producten returnen.
             return producten;
         } catch (SQLException sqlException) {
-            System.err.println("[SQLException] Geen reizigers gevonden. " + sqlException.getMessage());
+            System.err.println("[SQLException] Geen Producten gevonden. " + sqlException.getMessage());
         } catch (NullPointerException npe) {
             System.err.println("[NullPointerException] " + npe.getMessage());
         }catch (Exception e) {

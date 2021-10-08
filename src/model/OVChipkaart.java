@@ -82,8 +82,28 @@ public class OVChipkaart {
         this.producten = producten;
     }
 
+    public boolean addProduct(Product product){
+        if (!this.producten.contains(product)) {
+            this.producten.add(product);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean deleteProduct(Product product) {
+        if (this.producten.contains(product)) {
+            this.producten.remove(product);
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
-        return "OVChipkaart {#" + this.kaart_nummer + " Klasse: " + this.klasse + " Geldig tot : " + this.geldig_tot + " Saldo: €" + this.saldo + "}";
+        String text = "OVChipkaart {#" + this.kaart_nummer + " Klasse: " + this.klasse + " Geldig tot : " + this.geldig_tot + " Saldo: €" + this.saldo + "}";
+        if (this.getProducten() != null) {
+            text = text + " " + this.getProducten();
+        }
+        return text;
     }
 }

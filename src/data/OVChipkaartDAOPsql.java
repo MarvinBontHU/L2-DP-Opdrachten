@@ -1,5 +1,6 @@
 package data;
 
+import model.Adres;
 import model.OVChipkaart;
 import model.Product;
 import model.Reiziger;
@@ -42,13 +43,6 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
             // Prepared statement sluiten.
             pst.close();
 
-            // Als product niet null is wordt deze ook opgeslagen via pdao.
-            if (ovChipkaart.getProducten() != null) {
-                List<Product> producten = ovChipkaart.getProducten();
-                for (Product product : producten){
-                    pdao.save(product);
-                }
-            }
 
             // Result teruggeven.
             return result;
@@ -80,13 +74,6 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
             // Prepared statement sluiten.
             pst.close();
 
-            // Als product niet null is wordt deze ook opgeslagen via pdao.
-            if (ovChipkaart.getProducten() != null) {
-                List<Product> producten = ovChipkaart.getProducten();
-                for (Product product : producten){
-                    pdao.save(product);
-                }
-            }
 
             // Result teruggeven.
             return result;
@@ -105,13 +92,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
     @Override
     public boolean delete(OVChipkaart ovChipkaart) throws SQLException {
         try {
-            // Als product niet null is wordt deze als eerst verwijderd.
-            if (ovChipkaart.getProducten() != null) {
-                List<Product> producten = ovChipkaart.getProducten();
-                for (Product product : producten){
-                    pdao.delete(product);
-                }
-            }
+
             //Query om een ovchipkaart te deleten, gegeven deze niet null is.
             if (ovChipkaart != null) {
                 String query = "DELETE FROM ov_chipkaart WHERE kaart_nummer = ?";
@@ -163,6 +144,15 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
 
 
                 OVChipkaart ovchipkaart = new OVChipkaart(ov_id, ov_gt, ov_kl, ov_sd, reiziger);
+
+                List<Product> producten = pdao.findByOVChipkaart(ovchipkaart);
+
+                if (producten != null) {
+                    for (Product product : producten) {
+                        ovchipkaart.addProduct(product);
+                    }
+                }
+
                 ovchipkaarten.add(ovchipkaart);
             }
 
@@ -180,4 +170,50 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
         }
         return null;
     }
+
+    @Override
+    public List<OVChipkaart> findAll() throws SQLException {
+        try{
+            // Statement openen
+            Statement st = conn.createStatement();
+
+            // Query om alle chipkaarten op te vragen.
+            String query = "SELECT * FROM ov_chipkaart";
+
+            // Resultset openen.
+            ResultSet rs = st.executeQuery(query);
+
+            // Lege ovchipkaart en lijst aanmaken om later data in te stoppen.
+            OVChipkaart ovChipkaart = null;
+            List<OVChipkaart> ovChipkaarten = new ArrayList<>();
+
+            while (rs.next()) {
+                int ov_id = rs.getInt("kaart_nummer");
+                Date ov_gt = rs.getDate("geldig_tot");
+                int ov_kl = rs.getInt("klasse");
+                double ov_sd = rs.getDouble("saldo");
+
+
+                OVChipkaart ovchipkaart = new OVChipkaart(ov_id, ov_gt, ov_kl, ov_sd);
+                ovChipkaarten.add(ovchipkaart);
+            }
+
+            // Resultset en Statement sluiten
+            rs.close();
+            st.close();
+
+            // Ovchipkaarten returnen.
+            return ovChipkaarten;
+
+        } catch (SQLException sqlException) {
+            System.err.println("[SQLException] Geen reizigers gevonden. " + sqlException.getMessage());
+        } catch (NullPointerException npe) {
+            System.err.println("[NullPointerException] " + npe.getMessage());
+        }catch (Exception e) {
+            System.err.println("[Exception] Error. : " + e.getMessage() );
+        }
+        return null;
+    }
+
+
 }
