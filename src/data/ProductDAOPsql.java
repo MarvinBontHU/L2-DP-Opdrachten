@@ -38,6 +38,12 @@ public class ProductDAOPsql implements ProductDAO{
             // Prepared statement sluiten.
             pst.close();
 
+            if (product.getOvChipkaarten() != null) {
+                for (OVChipkaart ovChipkaart : product.getOvChipkaarten()) {
+                    ovdao.save(ovChipkaart);
+                }
+            }
+
             // Result teruggeven.
             return result;
         } catch (SQLException sqe) {
@@ -68,6 +74,7 @@ public class ProductDAOPsql implements ProductDAO{
             // Prepared statement sluiten.
             pst.close();
 
+            // Ervoor zorgen dat het product bij elke OvChipkaart aangepast wordt. ( Incompleet )
 
 
             // Result teruggeven.

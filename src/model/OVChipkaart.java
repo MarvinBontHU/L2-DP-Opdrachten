@@ -80,6 +80,7 @@ public class OVChipkaart {
 
     public void setProducten(List<Product> producten) { this.producten = producten; }
 
+
     public boolean deleteProduct(Product product) {
         if (this.producten.contains(product)) {
             this.producten.remove(product);

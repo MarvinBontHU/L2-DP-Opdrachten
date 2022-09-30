@@ -6,7 +6,7 @@ public class Product {
     private int product_nummer;
     private String naam, beschrijving;
     private double prijs;
-    private OVChipkaart ovChipkaart;
+    private List<OVChipkaart> ovChipkaarten;
 
     public Product(int pn, String nm, String bs, double pr) {
         this.product_nummer = pn;
@@ -15,12 +15,12 @@ public class Product {
         this.prijs = pr;
     }
 
-    public Product(int pn, String nm, String bs, double pr, OVChipkaart ov) {
+    public Product(int pn, String nm, String bs, double pr, List<OVChipkaart> ov) {
         this.product_nummer = pn;
         this.naam = nm;
         this.beschrijving = bs;
         this.prijs = pr;
-        this.ovChipkaart = ov;
+        this.ovChipkaarten = ov;
     }
 
     public int getProduct_nummer() { return product_nummer; }
@@ -39,29 +39,15 @@ public class Product {
 
     public void setProduct_nummer(int product_nummer) { this.product_nummer = product_nummer; }
 
-    public OVChipkaart getOvChipkaart() {
-        return ovChipkaart;
+    public List<OVChipkaart> getOvChipkaarten() {
+        return ovChipkaarten;
     }
 
-    public void setOvChipkaart(OVChipkaart ovChipkaart) {
-        this.ovChipkaart = ovChipkaart;
+    public void setOvChipkaarten(List<OVChipkaart> ovChipkaarten) {
+        this.ovChipkaarten = ovChipkaarten;
     }
 
-    public boolean addOvchipkaart(OVChipkaart ovChipkaart){
-        if (ovChipkaart != null) {
-            this.ovChipkaart = ovChipkaart;
-            return true;
-        }
-        return false;
-    }
 
-    public boolean deleteProduct(Product product) {
-        if (ovChipkaart != null) {
-            this.ovChipkaart = null;
-            return true;
-        }
-        return false;
-    }
 
     @Override
     public String toString() {
