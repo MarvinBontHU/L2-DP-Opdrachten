@@ -72,7 +72,10 @@ public class Reiziger {
             reiziger = reiziger + ", " + adres +" }";
         }
         if (this.ovchipkaarten != null) {
-            reiziger = reiziger + ", " + ovchipkaarten + " }";
+            if (this.ovchipkaarten.toString() == "[]")
+                reiziger = reiziger + " Geen OV-Chipkaart aanwezig.";
+            else
+                reiziger = reiziger + " " + ovchipkaarten + " }";
         }
 
         return reiziger;

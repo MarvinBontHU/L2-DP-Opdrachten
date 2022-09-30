@@ -70,7 +70,7 @@ public class Main {
         // Maak een nieuwe reiziger aan en persisteer deze in de database
         String gbdatum = "1981-03-14";
         Reiziger sietske = new Reiziger(77, "S", null, "Boers", java.sql.Date.valueOf(gbdatum));
-        System.out.print("[Test] Eerst " + reizigers.size() + " reizigers, na SQL.ReizigerDAO.save() ");
+        System.out.print("[Test] Aanmaken van een nieuwe reiziger." + "\n" + "Eerst " + reizigers.size() + " reizigers, na SQL.ReizigerDAO.save() ");
         rdao.save(sietske);
         reizigers = rdao.findAll();
         System.out.println(reizigers.size() + " reizigers\n");
@@ -80,19 +80,15 @@ public class Main {
         // Update achternaam naar Boeren
         System.out.println("[TEST] Achternaam van Sietske vervangen naar 'Boeren'\n");
         sietske.setAchternaam("Boeren");
+        System.out.println("Naam van Sietske voor update :" + "\n" + rdao.findById(77));
         rdao.update(sietske);
+        System.out.println("Naam van Sietske na update :" + "\n" + rdao.findById(77) + "\n");
 
-        reizigers = rdao.findAll();
-
-        for (Reiziger r : reizigers) {
-            if (r.getId() == 77) {
-                System.out.println(r+"\n");
-            }
-        }
 
 
         // Delete de aangemaakte sietske
-        System.out.print("[TEST] Eerst " + reizigers.size() + " reizigers, na SQL.ReizigerDAO.delete() ");
+        System.out.println("[TEST] Verwijderen van de net aangemaakte Sietske.");
+        System.out.print("Eerst " + reizigers.size() + " reizigers, na SQL.ReizigerDAO.delete() ");
         rdao.delete(sietske);
         reizigers = rdao.findAll();
         System.out.println(reizigers.size() + " reizigers\n");
@@ -123,6 +119,7 @@ public class Main {
         System.out.print("[Test] DELETE : Marvin en zijn adres verwijderen indien deze bestaan. \n\n");
         adao.delete(mAdres);
         rdao.delete(marvin);
+        System.out.println("Het zoeken van Marvin na het verwijderen geeft: " +  rdao.findById(100) + " aan.");
 
         // Reiziger opslaan.
         rdao.save(marvin);
@@ -187,18 +184,10 @@ public class Main {
     }
 
     private static void testProductDAO(ProductDAO pdao) throws SQLException {
-        System.out.println("\n---------- Test OvchipkaartDao -------------");
+        System.out.println("\n---------- Test ProductDAO -------------");
 
         // Een nieuw testproduct aanmaken
         Product product1 = new Product(7, "Test product", "Een testproduct om te kijken of dit werkt", 15.50);
-
-
-        System.out.println("[TEST] Verwijderen van bestaand product.");
-        System.out.println("Huidige Producten :");
-        System.out.println(pdao.findAll() + "\n");
-        pdao.delete(product1);
-        System.out.println("Producten na deleten:");
-        System.out.println(pdao.findAll() + "\n");
 
 
         System.out.println("[TEST] Opslaan van een nieuw testproduct");
@@ -209,6 +198,13 @@ public class Main {
         product1.setPrijs(20);
         pdao.update(product1);
         System.out.println(pdao.findAll());
+
+        System.out.println("[TEST] Verwijderen van bestaand product.");
+        System.out.println("Huidige Producten :");
+        System.out.println(pdao.findAll() + "\n");
+        pdao.delete(product1);
+        System.out.println("Producten na deleten:");
+        System.out.println(pdao.findAll() + "\n");
 
 
     }

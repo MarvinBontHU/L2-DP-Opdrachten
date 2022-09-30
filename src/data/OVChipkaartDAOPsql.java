@@ -146,13 +146,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
                 OVChipkaart ovchipkaart = new OVChipkaart(ov_id, ov_gt, ov_kl, ov_sd, reiziger);
 
                 List<Product> producten = pdao.findByOVChipkaart(ovchipkaart);
-
-                if (producten != null) {
-                    for (Product product : producten) {
-                        ovchipkaart.addProduct(product);
-                    }
-                }
-
+                ovchipkaart.setProducten(producten);
                 ovchipkaarten.add(ovchipkaart);
             }
 

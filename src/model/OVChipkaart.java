@@ -78,17 +78,7 @@ public class OVChipkaart {
         return producten;
     }
 
-    public void setProducten(List<Product> producten) {
-        this.producten = producten;
-    }
-
-    public boolean addProduct(Product product){
-        if (!this.producten.contains(product)) {
-            this.producten.add(product);
-            return true;
-        }
-        return false;
-    }
+    public void setProducten(List<Product> producten) { this.producten = producten; }
 
     public boolean deleteProduct(Product product) {
         if (this.producten.contains(product)) {
@@ -102,7 +92,7 @@ public class OVChipkaart {
     public String toString() {
         String text = "OVChipkaart {#" + this.kaart_nummer + " Klasse: " + this.klasse + " Geldig tot : " + this.geldig_tot + " Saldo: €" + this.saldo + "}";
         if (this.getProducten() != null) {
-            text = text + " " + this.getProducten();
+            text = text + "booya " + this.getProducten();
         }
         return text;
     }
