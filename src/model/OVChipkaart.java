@@ -34,6 +34,14 @@ public class OVChipkaart {
         this.producten = pd;
     }
 
+    public OVChipkaart(int kn, Date gt, int kl, double sd, List<Product> pd){
+        this.kaart_nummer = kn;
+        this.geldig_tot = gt;
+        this.klasse = kl;
+        this.saldo = sd;
+        this.producten = pd;
+    }
+
     public Reiziger getReiziger() {
         return reiziger;
     }
@@ -93,7 +101,7 @@ public class OVChipkaart {
     public String toString() {
         String text = "OVChipkaart {#" + this.kaart_nummer + " Klasse: " + this.klasse + " Geldig tot : " + this.geldig_tot + " Saldo: €" + this.saldo + "}";
         if (this.getProducten() != null) {
-            text = text + "booya " + this.getProducten();
+            text = text + this.getProducten();
         }
         return text;
     }

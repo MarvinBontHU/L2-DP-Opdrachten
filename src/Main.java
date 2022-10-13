@@ -7,6 +7,7 @@ import model.Product;
 import model.Reiziger;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -22,7 +23,7 @@ public class Main {
         testReizigerDAO(postgresReizigerDao);
         testAdresDAO(postgresAdresDao, postgresReizigerDao);
         testOvchipkaartDAO(postgresOvchipkaartDao, postgresReizigerDao);
-        testProductDAO(postgresProductDao);
+        testProductDAO(postgresProductDao, postgresOvchipkaartDao);
         connection.close();
     }
 
@@ -94,7 +95,6 @@ public class Main {
         System.out.println(reizigers.size() + " reizigers\n");
         rdao.delete(sietske);
 
-        // Nieuwe reiziger aanmaken voor adres test later.
 
     }
 
@@ -183,12 +183,12 @@ public class Main {
 
     }
 
-    private static void testProductDAO(ProductDAO pdao) throws SQLException {
+    private static void testProductDAO(ProductDAO pdao, OVChipkaartDAO ovdao) throws SQLException {
         System.out.println("\n---------- Test ProductDAO -------------");
+
 
         // Een nieuw testproduct aanmaken
         Product product1 = new Product(7, "Test product", "Een testproduct om te kijken of dit werkt", 15.50);
-
 
         System.out.println("[TEST] Opslaan van een nieuw testproduct");
         pdao.save(product1);
@@ -206,6 +206,9 @@ public class Main {
         System.out.println("Producten na deleten:");
         System.out.println(pdao.findAll() + "\n");
 
+        System.out.println("[TEST] Zoeken via OVChipkaart");
+        OVChipkaart testOV = ovdao.findAll().get(3);
+        System.out.println(pdao.findByOVChipkaart(testOV));
 
     }
 
